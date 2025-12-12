@@ -14,7 +14,7 @@ export const submitGuestQuiz = async (req, res) => {
           email
         });
 
-        return successResponse(res, 200, "Quiz submitted successfully", result);
+        return successResponse(res, 200, result.message);
 
     } catch (error) {
         const status = error.status || 500;
@@ -37,3 +37,5 @@ export const submitUserQuiz = async (req, res) => {
         return errorResponse(res, status, error.message);
     }
 };
+
+
