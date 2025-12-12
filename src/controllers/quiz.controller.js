@@ -1,0 +1,23 @@
+import { QuizService } from "../services/quiz.service.js";
+import { errorResponse, successResponse } from "../utils/response.js";
+
+export const submitGuestQuiz = async (req, res) => {
+    try {
+        const { answers, email } = req.body;
+
+        if (!email) {
+            return errorResponse(res, 400, "Email is required");
+        }
+
+        const result = await QuizService.processGuestQuiz({
+          answers,
+          email
+        });
+
+        return successResponse(res, 200, "Quiz submitted successfully", result);
+
+    } catch (error) {
+        const status = error.status || 500;
+        return errorResponse(res, status, error.message);
+    }
+};
