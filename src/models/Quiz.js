@@ -13,9 +13,9 @@ const QuizSchema = new Schema({
     default: "pending"
   },
 
-  songCount: { type: Number, default: 15 },
-  vibeDetails: { type: Object, default: null },
-  isPremiumRequested: Boolean,
+  song_count: { type: Number, default: 15 },
+  vibe_details: { type: Object, default: null },
+  is_premium_requested: Boolean,
 
 }, { timestamps: true });
 

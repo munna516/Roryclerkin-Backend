@@ -21,3 +21,19 @@ export const submitGuestQuiz = async (req, res) => {
         return errorResponse(res, status, error.message);
     }
 };
+
+export const submitUserQuiz = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { answers, isPremiumRequested } = req.body;
+        const result = await QuizService.processUserQuiz({
+          answers,
+          userId,
+          isPremiumRequested
+        });
+        return successResponse(res, 200, "Quiz submitted successfully",result);
+    } catch (error) {
+        const status = error.status || 500;
+        return errorResponse(res, status, error.message);
+    }
+};

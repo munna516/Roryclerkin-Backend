@@ -1,8 +1,6 @@
 import { successResponse, errorResponse } from "../utils/response.js";
 import { userService } from "../services/user.service.js";
 
-
-
 export const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -10,7 +8,7 @@ export const registerUser = async (req, res) => {
             return errorResponse(res, 400, "Name, email and password are required");
         }
         const user = await userService.createUser(name, email, password);
-        return successResponse(res, 201, "User registered successfully", user);
+        return successResponse(res, 201, "User registered successfully");
     } catch (error) {
         const status = error.status || 500;
         return errorResponse(res, status, error.message);

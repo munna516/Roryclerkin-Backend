@@ -2,20 +2,42 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import constants from "../config/constant.js";
+import Lead from "../models/Lead.js";
+import Quiz from "../models/Quiz.js";
+import Playlist from "../models/Playlist.js";
 
 export const userService = {
     createUser: async (name, email, password) => {
-        // check if user already exists
+
         const existing = await User.findOne({ email });
         if (existing) {
             const error = new Error("User already exists");
             error.status = 400;
             throw error;
         }
+      
+        const existingLead = await Lead.findOne({ email });
 
-        // hash password
         const hashedPassword = await bcrypt.hash(password, 12);
-        return User.create({ name, email, password: hashedPassword });
+
+        const newUser = await User.create({ name, email, password: hashedPassword });
+
+        if (existingLead) {
+
+            await Quiz.updateMany(
+                { leadId: existingLead._id },
+                { userId: newUser._id, leadId: null }
+            );
+
+            await Playlist.updateMany(
+                { leadId: existingLead._id },
+                { userId: newUser._id, leadId: null }
+            );
+
+            await Lead.deleteOne({ _id: existingLead._id });
+        }
+
+        return newUser;
     },
 
     loginUser: async (email, password) => {
