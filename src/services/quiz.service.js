@@ -1,24 +1,24 @@
-import Lead from "../models/Lead.js";
 import Quiz from "../models/Quiz.js";
 import Playlist from "../models/Playlist.js";
 import constants from "../config/constant.js";
 import { sendEmail } from "../utils/email.js";
+import User from "../models/User.js";
 
 export const QuizService = {
     processGuestQuiz: async ({ answers, email }) => {
 
-        const lead = await Lead.findOneAndUpdate(
+        const user = await User.findOneAndUpdate(
             { email },
-            { email },
+            { type: "guest" },
             { upsert: true, new: true }
         );
 
         const quiz = await Quiz.create({
-            leadId: lead._id,
+            userId: user._id,
             answers,
             status: "processing",
             songCount: 15,
-            isPremiumRequested: false
+            is_premium_requested: false
         });
 
         // const aiRes = await axios.post(process.env.AI_ENDPOINT, {
@@ -63,7 +63,7 @@ export const QuizService = {
 
         const playlist = await Playlist.create({
             quizId: quiz._id,
-            leadId: lead._id,
+            userId: user._id,
             title: playlistData.title,
             description: playlistData.description,
             tracks: playlistData.tracks,
@@ -92,15 +92,14 @@ export const QuizService = {
             playlistLink
         };
     },
+
     processUserQuiz: async ({ userId, answers, isPremiumRequested }) => {
-
-
         const quiz = await Quiz.create({
             userId,
             answers,
-            isPremiumRequested: isPremiumRequested,
+            is_premium_requested: isPremiumRequested,
             status: isPremiumRequested ? "pending" : "processing",
-            songCount: isPremiumRequested ? 50 : 15
+            song_count: isPremiumRequested ? 50 : 15
         });
 
 
@@ -160,7 +159,7 @@ export const QuizService = {
                 quizId: quiz._id
             };
         }
-        console.log("Premium requested");
+        
         return;
 
         const session = await stripe.checkout.sessions.create({

@@ -3,10 +3,7 @@ import mongoose from "mongoose";
 
 const QuizSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", default: null },
-  leadId: { type: Schema.Types.ObjectId, ref: "Lead", default: null },
-
   answers: { type: Object, required: true },
-
   status: {
     type: String,
     enum: ["pending", "processing", "done", "failed"],
