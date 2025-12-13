@@ -16,8 +16,9 @@ export const getGuestPlaylist = async (req, res) => {
 
 export const getUserPlaylist = async (req, res) => {
     try {
-        const { id } = req.params;
-        const result = await PlaylistService.getUserPlaylist(id);
+        // const { id } = req.params;
+        const userId = req.user._id;
+        const result = await PlaylistService.getUserPlaylist(userId);
         return successResponse(res, 200, "User playlist fetched successfully", result);
     } catch (error) {
         const status = error.status || 500;
