@@ -6,5 +6,4 @@ const playlistRoutes = express.Router();
 playlistRoutes.get("/guest/playlist/:id", getGuestPlaylist);
 playlistRoutes.get("/user/playlist/:id", authMiddleware, getUserPlaylist);
 
-
 export default playlistRoutes;

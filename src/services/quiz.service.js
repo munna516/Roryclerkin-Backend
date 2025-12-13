@@ -3,6 +3,10 @@ import Playlist from "../models/Playlist.js";
 import constants from "../config/constant.js";
 import { sendEmail } from "../utils/email.js";
 import User from "../models/User.js";
+import Stripe from "stripe";
+
+
+const stripe = new Stripe(constants.STRIPE_SECRET_KEY);
 
 export const QuizService = {
     processGuestQuiz: async ({ answers, email }) => {
@@ -150,7 +154,7 @@ export const QuizService = {
 
 
             quiz.status = "done";
-            quiz.vibeDetails = playlistData.vibe || null;
+            quiz.vibe_details = playlistData.vibe || null;
             await quiz.save();
 
             return {
@@ -160,17 +164,15 @@ export const QuizService = {
             };
         }
         
-        return;
-
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
             payment_method_types: ["card"],
             line_items: [
                 {
                     price_data: {
-                        currency: "usd",
+                        currency: "eur",
                         product_data: { name: "Premium Playlist (50 songs)" },
-                        unit_amount: 500 // $5.00
+                        unit_amount: 900 
                     },
                     quantity: 1
                 }
