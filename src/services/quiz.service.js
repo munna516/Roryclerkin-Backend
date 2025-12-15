@@ -4,7 +4,7 @@ import constants from "../config/constant.js";
 import { sendEmail } from "../utils/email.js";
 import User from "../models/User.js";
 import Stripe from "stripe";
-
+import axios from "axios";
 
 const stripe = new Stripe(constants.STRIPE_SECRET_KEY);
 
@@ -25,76 +25,53 @@ export const QuizService = {
             is_premium_requested: false
         });
 
-        // const aiRes = await axios.post(process.env.AI_ENDPOINT, {
-        //   answers,
-        //   song_count: 15
-        // });
+
+        try {
+            const aiRes = await axios.post(constants.AI_ENDPOINT + "/generate-playlist", {
+                answers,
+                song_count: 15
+            });
 
 
-        // if (!aiRes.data.success) {
-        //   quiz.status = "failed";
-        //   await quiz.save();
-        //   throw new Error("AI Failed to generate playlist");
-        // }
 
-        const playlistData = {
-            title: "Golden Nostalgia Party Mix",
-            description: "A nostalgic blend of 70s, 80s, 90s and modern dance-pop, tailored for a lively evening celebration.",
-            vibe: "Golden Nostalgia",
-            song_count: 15,
-            spotify_url: "https://open.spotify.com/playlist/4kHhLrNCp5mXfEXDummy",
-            tracks: [
-                { artist: "ABBA", song: "Dancing Queen" },
-                { artist: "Whitney Houston", song: "I Wanna Dance with Somebody" },
-                { artist: "Queen", song: "Don't Stop Me Now" },
-                { artist: "Calvin Harris", song: "Feel So Close" },
-                { artist: "Dua Lipa", song: "Don't Start Now" },
-                { artist: "Fleetwood Mac", song: "Everywhere" },
-                { artist: "Earth, Wind & Fire", song: "September" },
-                { artist: "The Weeknd", song: "Blinding Lights" },
-                { artist: "Bruno Mars", song: "24K Magic" },
-                { artist: "Lady Gaga", song: "Rain on Me" },
-                { artist: "Mark Ronson", song: "Uptown Funk" },
-                { artist: "Coldplay", song: "Adventure of a Lifetime" },
-                { artist: "Daft Punk", song: "Get Lucky" },
-                { artist: "Avicii", song: "Wake Me Up" },
-                { artist: "Maroon 5", song: "Sugar" }
-            ]
-        };
+            if (aiRes.status !== 200) {
+                quiz.status = "failed";
+                await quiz.save();
+                throw new Error("AI Failed to generate playlist");
+            }
 
+            const playlistData = aiRes.data.playlist;
+            const playlist = await Playlist.create({
+                userId: user._id,
+                quizId: quiz._id,
+                title: playlistData.title,
+                description: playlistData.description,
+                tracks: playlistData.tracks,
+                spotify_url: playlistData.spotify_url,
+                song_count: playlistData.song_count,
+                playlist_type: "default"
+            });
 
-        // const playlistData = aiRes.data.playlist;
+            quiz.status = "done";
+            quiz.vibe_details = playlistData.vibe || null;
+            await quiz.save();
 
-        const playlist = await Playlist.create({
-            quizId: quiz._id,
-            userId: user._id,
-            title: playlistData.title,
-            description: playlistData.description,
-            tracks: playlistData.tracks,
-            spotify_url: playlistData.spotify_url,
-            song_count: playlistData.song_count,
-            playlist_type: "default"
-        });
+            const playlistLink = `${constants.FRONTEND_URL}/playlist/${quiz._id}`;
 
+            await sendEmail(
+                email,
+                "Your Personalized Playlist is Ready!",
+                `Click the link to view your playlist: ${playlistLink}`
+            );
 
-        quiz.status = "done";
-        quiz.vibeDetails = playlistData.vibe || null;
-        await quiz.save();
-
-
-        const playlistLink = `${constants.FRONTEND_URL}/playlist/${quiz._id}`;
-
-        await sendEmail(
-            email,
-            "Your Personalized Playlist is Ready!",
-            `Click the link to view your playlist: ${playlistLink}`
-        );
-
-        return {
-            success: true,
-            message: "Playlist sent to email!",
-            playlistLink
-        };
+            return {
+                success: true,
+                message: "Playlist sent to email!",
+                playlistLink
+            };
+        } catch (error) {
+            console.log(error);
+        }
     },
 
     processUserQuiz: async ({ userId, answers, isPremiumRequested }) => {
@@ -109,37 +86,12 @@ export const QuizService = {
 
         if (!isPremiumRequested) {
 
-            //   const aiRes = await axios.post(process.env.AI_ENDPOINT, {
-            //     answers,
-            //     song_count: 15
-            //   });
+            const aiRes = await axios.post(constants.AI_ENDPOINT + "/generate-playlist", {
+                answers,
+                song_count: 15
+            });
 
-            //   const playlistData = aiRes.data.playlist;
-            const playlistData = {
-                title: "Golden Nostalgia Party Mix",
-                description: "A nostalgic blend of 70s, 80s, 90s and modern dance-pop, tailored for a lively evening celebration.",
-                vibe: "Golden Nostalgia",
-                song_count: 15,
-                spotify_url: "https://open.spotify.com/playlist/4kHhLrNCp5mXfEXDummy",
-                tracks: [
-                    { artist: "ABBA", song: "Dancing Queen" },
-                    { artist: "Whitney Houston", song: "I Wanna Dance with Somebody" },
-                    { artist: "Queen", song: "Don't Stop Me Now" },
-                    { artist: "Calvin Harris", song: "Feel So Close" },
-                    { artist: "Dua Lipa", song: "Don't Start Now" },
-                    { artist: "Fleetwood Mac", song: "Everywhere" },
-                    { artist: "Earth, Wind & Fire", song: "September" },
-                    { artist: "The Weeknd", song: "Blinding Lights" },
-                    { artist: "Bruno Mars", song: "24K Magic" },
-                    { artist: "Lady Gaga", song: "Rain on Me" },
-                    { artist: "Mark Ronson", song: "Uptown Funk" },
-                    { artist: "Coldplay", song: "Adventure of a Lifetime" },
-                    { artist: "Daft Punk", song: "Get Lucky" },
-                    { artist: "Avicii", song: "Wake Me Up" },
-                    { artist: "Maroon 5", song: "Sugar" }
-                ]
-            };
-
+            const playlistData = aiRes.data.playlist;
 
             const playlist = await Playlist.create({
                 userId,
@@ -163,7 +115,7 @@ export const QuizService = {
                 quizId: quiz._id
             };
         }
-        
+
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
             payment_method_types: ["card"],
@@ -172,7 +124,7 @@ export const QuizService = {
                     price_data: {
                         currency: "eur",
                         product_data: { name: "Premium Playlist (50 songs)" },
-                        unit_amount: 900 
+                        unit_amount: 900
                     },
                     quantity: 1
                 }
