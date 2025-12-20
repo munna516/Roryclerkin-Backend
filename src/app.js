@@ -5,6 +5,13 @@ import routes from "./routes/index.js";
 
 const app = express();
 
+app.use(cors(
+    {
+        origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
+        credentials: true,
+    }
+));
+
 app.use(
     "/api/v1/stripe",
     express.raw({ type: "application/json" })
@@ -13,12 +20,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors(
-    {
-        origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
-        credentials: true,
-    }
-));
+
 
 app.use("/api/v1", routes);
 
