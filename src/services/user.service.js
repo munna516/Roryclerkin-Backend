@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import constants from "../config/constant.js";
+import { errorResponse } from "../utils/response.js";
 
 export const userService = {
     createUser: async (name, email, password) => {
@@ -11,9 +12,7 @@ export const userService = {
         const existingUser = await User.findOne({ email });
 
         if (existingUser && existingUser.type !== "guest") {
-            const error = new Error("User already exists");
-            error.status = 400;
-            throw error;
+           return { success: false, message: "User already exists", status: 400 };
         }
 
         // Step 2: Create OR upgrade
@@ -42,14 +41,14 @@ export const userService = {
         const user = await User.findOne({ email });
         if (!user) {
             const error = new Error("User not found");
-            error.status = 400;
+
             throw error;
         }
 
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
             const error = new Error("Invalid password");
-            error.status = 400;
+
             throw error;
         }
 

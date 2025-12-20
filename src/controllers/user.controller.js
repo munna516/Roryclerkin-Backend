@@ -8,7 +8,9 @@ export const registerUser = async (req, res) => {
             return errorResponse(res, 400, "Name, email and password are required");
         }
         const user = await userService.createUser(name, email, password);
-
+        if (!user.success) {
+            return errorResponse(res, user.status, user.message);
+        }
         return successResponse(res, 201, "User registered successfully");
     } catch (error) {
         const status = error.status || 500;
@@ -18,9 +20,9 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
-
+        
         const { email, password } = req.body;
-
+        
         if (!email || !password) {
             return errorResponse(res, 400, "Email and password are required");
         }
