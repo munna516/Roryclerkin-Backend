@@ -29,8 +29,8 @@ export const QuizService = {
         try {
             const aiRes = await axios.post(constants.AI_ENDPOINT + "/generate-playlist", {
                 answers,
-                song_count: 15
-            });
+                user_type: "free"
+            }, { headers: { "Content-Type": "application/json" } });
 
 
 
@@ -88,10 +88,10 @@ export const QuizService = {
 
             const aiRes = await axios.post(constants.AI_ENDPOINT + "/generate-playlist", {
                 answers,
-                song_count: 15
+                user_type: "free"
             });
 
-            const playlistData = aiRes.data.playlist;
+            const playlistData = aiRes.data.playlist;  
 
             const playlist = await Playlist.create({
                 userId,

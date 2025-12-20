@@ -6,5 +6,4 @@ const quizRoutes = express.Router();
 quizRoutes.post("/guest/submit", submitGuestQuiz);
 quizRoutes.post("/user/submit", authMiddleware, submitUserQuiz);
 
-
 export default quizRoutes;

@@ -47,6 +47,7 @@ export const handleStripeWebhook = async (req, res) => {
                     quizId,
                     playlist_type: "premium"
                 });
+
                 if (existingPlaylist) {
                     console.log("Premium playlist already exists for quiz:", quizId);
                     return;
@@ -54,11 +55,8 @@ export const handleStripeWebhook = async (req, res) => {
 
                 const aiRes = await axios.post(
                     constants.AI_ENDPOINT + "/generate-playlist",
-                    {
-                        answers: quiz.answers,
-                        song_count: 50
-                    },
-                    { timeout: 60000 } // avoid hanging sockets
+                    { headers: { "Content-Type": "application/json" } },
+                    { answers: quiz.answers, user_type: "paid" }
                 );
 
                 const playlistData = aiRes.data.playlist;
