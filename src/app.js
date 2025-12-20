@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import constants from "./config/constant.js";
 import { successResponse, errorResponse } from "./utils/response.js";
 import routes from "./routes/index.js";
 
@@ -16,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(
     {
-        origin: constants.ALLOWED_ORIGIN,
+        origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
         credentials: true,
     }
 ));
