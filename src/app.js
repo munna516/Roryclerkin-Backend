@@ -14,7 +14,7 @@ const allowedOrigins = [
   "http://localhost:3000",   // React (CRA)
   "http://localhost:5173",   // React (Vite)
   "http://172.252.13.97:8011", // Backend direct access (optional)
-  "https://your-frontend-domain.com" // Production frontend
+  "https://m-music-lory.vercel.app" // Production frontend
 ];
 
 app.use(
