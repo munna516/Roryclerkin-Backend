@@ -54,6 +54,9 @@ app.use(express.urlencoded({ extended: true }));
    ================================ */
 app.use("/api/v1", routes);
 
+app.use("/", (req, res) => {
+  res.status(200).json({ message: "Welcome to the Rory Backend" });
+});
 /* ================================
    HEALTH CHECK (OPTIONAL)
    ================================ */
