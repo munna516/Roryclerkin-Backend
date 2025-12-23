@@ -74,17 +74,17 @@ export const QuizService = {
         }
     },
 
-    processUserQuiz: async ({ userId, answers, isPremiumRequested }) => {
+    processUserQuiz: async ({ userId, answers, user_type }) => {
         const quiz = await Quiz.create({
             userId,
             answers,
-            is_premium_requested: isPremiumRequested,
-            status: isPremiumRequested ? "pending" : "processing",
-            song_count: isPremiumRequested ? 50 : 15
+            is_premium_requested: user_type === "paid"? true : false,
+            status: user_type === "paid" ? "pending" : "processing",
+            song_count: user_type === "paid" ? 50 : 15
         });
 
 
-        if (!isPremiumRequested) {
+        if (user_type === "free") {
 
             const aiRes = await axios.post(constants.AI_ENDPOINT + "/generate-playlist", {
                 answers,
@@ -129,8 +129,8 @@ export const QuizService = {
                     quantity: 1
                 }
             ],
-            success_url: `${process.env.FRONTEND_URL}/premium-success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.FRONTEND_URL}/premium-cancel`,
+            success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.FRONTEND_URL}/cancel`,
             metadata: {
                 quizId: quiz._id.toString(),
                 userId: userId.toString(),

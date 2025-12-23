@@ -10,8 +10,8 @@ export const submitGuestQuiz = async (req, res) => {
         }
 
         const result = await QuizService.processGuestQuiz({
-          answers,
-          email
+            answers,
+            email
         });
 
         return successResponse(res, 200, result.message);
@@ -25,13 +25,13 @@ export const submitGuestQuiz = async (req, res) => {
 export const submitUserQuiz = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { answers, isPremiumRequested } = req.body;
+        const { answers, user_type } = req.body;
         const result = await QuizService.processUserQuiz({
-          answers,
-          userId,
-          isPremiumRequested
+            answers,
+            userId,
+            user_type
         });
-        return successResponse(res, 200, "Quiz submitted successfully",result);
+        return successResponse(res, 200, "Quiz submitted successfully", result);
     } catch (error) {
         const status = error.status || 500;
         return errorResponse(res, status, error.message);

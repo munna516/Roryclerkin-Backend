@@ -9,7 +9,7 @@ export const PlaylistService = {
         return playlist;
     },
     getUserPlaylist: async (userId) => {
-        const playlist = await Playlist.find({ userId: userId }).sort({ createdAt: 1 }).limit(1);
+        const playlist = await Playlist.find({ userId: userId }).sort({ createdAt: 1 });
         if (!playlist) {
             throw new Error("Playlist not found");
         }
