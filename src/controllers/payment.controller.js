@@ -8,8 +8,8 @@ import axios from "axios";
 
 export const handleStripeWebhook = async (req, res) => {
     let event;
-    console.log("this is the request", req.body);
     //  Verify webhook signature
+    console.log("WEB HOOK RECEIVED")
     try {
         const sig = req.headers["stripe-signature"];
 
@@ -28,62 +28,61 @@ export const handleStripeWebhook = async (req, res) => {
         const session = event.data.object;
 
         // Kick heavy work to the next tick so we can respond fast to Stripe.
-        setImmediate(async () => {
-            try {
-                const { quizId, userId } = session.metadata || {};
-                if (!quizId || !userId) {
-                    console.warn("Missing metadata, skipping");
-                    return;
-                }
 
-                const quiz = await Quiz.findById(quizId);
-                if (!quiz) {
-                    console.warn("Quiz not found", { quizId });
-                    return;
-                }
-
-                //  IDEMPOTENCY: prevent duplicate playlists
-                const existingPlaylist = await Playlist.findOne({
-                    quizId,
-                    playlist_type: "premium"
-                });
-
-                if (existingPlaylist) {
-                    console.log("Premium playlist already exists for quiz:", quizId);
-                    return;
-                }
-
-                const aiRes = await axios.post(
-                    constants.AI_ENDPOINT + "/generate-playlist",
-                    { headers: { "Content-Type": "application/json" } },
-                    { answers: quiz.answers, user_type: "paid" }
-                );
-
-                const playlistData = aiRes.data.playlist;
-                console.log("playlistData", playlistData);
-
-                //  Save premium playlist (schema-correct)
-                await Playlist.create({
-                    quizId: quiz._id,
-                    userId,
-                    title: playlistData.title,
-                    description: playlistData.description,
-                    tracks: playlistData.tracks,
-                    spotify_url: playlistData.spotify_url,
-                    song_count: playlistData.song_count,
-                    playlist_type: "premium"
-                });
-
-                //  Update quiz
-                quiz.status = "done";
-                quiz.vibe_details = playlistData.vibe || null;
-                await quiz.save();
-
-                console.log("Premium playlist generated for quiz:", quizId);
-            } catch (err) {
-                console.error("Background premium playlist error:", err);
+        try {
+            const { quizId, userId } = session.metadata || {};
+            if (!quizId || !userId) {
+                console.warn("Missing metadata, skipping");
+                return;
             }
-        });
+
+            const quiz = await Quiz.findById(quizId);
+            if (!quiz) {
+                console.warn("Quiz not found", { quizId });
+                return;
+            }
+
+            //  IDEMPOTENCY: prevent duplicate playlists
+            const existingPlaylist = await Playlist.findOne({
+                quizId,
+                playlist_type: "premium"
+            });
+
+            if (existingPlaylist) {
+
+                return;
+            }
+            const aiRes = await axios.post(
+                constants.AI_ENDPOINT + "/generate-playlist",
+                { answers: quiz.answers, user_type: "paid" },
+                { headers: { "Content-Type": "application/json" } },
+
+            );
+
+            const playlistData = aiRes.data.playlist;
+
+            //  Save premium playlist (schema-correct)
+            await Playlist.create({
+                quizId: quiz._id,
+                userId,
+                title: playlistData.title,
+                description: playlistData.description,
+                tracks: playlistData.tracks,
+                spotify_url: playlistData.spotify_url,
+                song_count: playlistData.song_count,
+                playlist_type: "premium"
+            });
+
+            //  Update quiz
+            quiz.status = "done";
+            quiz.vibe_details = playlistData.vibe || null;
+            await quiz.save();
+
+
+        } catch (err) {
+            console.error("Background premium playlist error:", err);
+        }
+
     }
 
     //  Always acknowledge Stripe

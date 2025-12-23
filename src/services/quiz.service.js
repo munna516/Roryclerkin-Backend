@@ -70,7 +70,7 @@ export const QuizService = {
                 playlistLink
             };
         } catch (error) {
-            console.log(error);
+
         }
     },
 
@@ -78,7 +78,7 @@ export const QuizService = {
         const quiz = await Quiz.create({
             userId,
             answers,
-            is_premium_requested: user_type === "paid"? true : false,
+            is_premium_requested: user_type === "paid" ? true : false,
             status: user_type === "paid" ? "pending" : "processing",
             song_count: user_type === "paid" ? 50 : 15
         });
@@ -91,7 +91,7 @@ export const QuizService = {
                 user_type: "free"
             });
 
-            const playlistData = aiRes.data.playlist;  
+            const playlistData = aiRes.data.playlist;
 
             const playlist = await Playlist.create({
                 userId,

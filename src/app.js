@@ -1,20 +1,15 @@
 import express from "express";
 import cors from "cors";
 import routes from "./routes/index.js";
+import paymentRoutes from "./routes/payment.routes.js";
 
 const app = express();
 
-/* ================================
-   Stripe Webhook (RAW BODY FIRST)
-   ================================ */
 app.use(
-  "/api/v1/stripe",
-  express.raw({ type: "application/json" })
+  "/api/v1/stripe/payment",
+  paymentRoutes
 );
 
-/* ================================
-   CORS CONFIGURATION
-   ================================ */
 const allowedOrigins = [
   "http://localhost:3000",   // React (CRA)
   "http://localhost:5173",   // React (Vite)
@@ -54,7 +49,7 @@ app.use(express.urlencoded({ extended: true }));
    ================================ */
 app.use("/api/v1", routes);
 
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to the Rory Backend" });
 });
 /* ================================
