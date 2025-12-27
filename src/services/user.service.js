@@ -32,7 +32,7 @@ export const userService = {
                 new: true,
                 upsert: true
             }
-        );
+        ).select("-password");
 
         return user;
     },
