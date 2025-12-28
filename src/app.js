@@ -11,9 +11,7 @@ app.use(
 );
 
 const allowedOrigins = [
-  "http://localhost:3000",   // React (CRA)
-  "http://localhost:5173",   // React (Vite)
-  "http://172.252.13.97:8011", // Backend direct access (optional)
+  "https://soundtrackmynight.com",   // React (CRA)
   "https://m-music-lory.vercel.app" // Production frontend
 ];
 

@@ -41,6 +41,7 @@ export const QuizService = {
             }
 
             const playlistData = aiRes.data.playlist;
+
             const playlist = await Playlist.create({
                 userId: user._id,
                 quizId: quiz._id,
@@ -57,7 +58,7 @@ export const QuizService = {
             await quiz.save();
 
             const playlistLink = `${constants.FRONTEND_URL}/playlist/${quiz._id}`;
-
+            
             await sendEmail(
                 email,
                 "Your Personalized Playlist is Ready!",

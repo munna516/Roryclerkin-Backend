@@ -9,10 +9,15 @@ export const submitGuestQuiz = async (req, res) => {
             return errorResponse(res, 400, "Email is required");
         }
 
+
         const result = await QuizService.processGuestQuiz({
             answers,
             email
         });
+
+        if (!result || !result.message) {
+            return errorResponse(res, 500, "Failed to process quiz");
+        }
 
         return successResponse(res, 200, result.message);
 

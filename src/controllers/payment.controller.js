@@ -9,7 +9,6 @@ import axios from "axios";
 export const handleStripeWebhook = async (req, res) => {
     let event;
     //  Verify webhook signature
-    console.log("WEB HOOK RECEIVED")
     try {
         const sig = req.headers["stripe-signature"];
 

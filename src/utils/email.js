@@ -1,17 +1,20 @@
 import nodemailer from "nodemailer";
 import constants from "../config/constant.js";
 
-export const sendEmail = async (to, subject, text) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: constants.EMAIL_USER,
-      pass: constants.EMAIL_PASS
-    }
-  });
+const transporter = nodemailer.createTransport({
+  host: "smtp.hostinger.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: constants.EMAIL_USER,
+    pass: constants.EMAIL_PASS
+  },
+  requireTLS: true
+});
 
-  await transporter.sendMail({
-    from: constants.EMAIL_USER,
+export const sendEmail = async (to, subject, text) => {
+  return transporter.sendMail({
+    from: `"Soundtrack My Night" <info@soundtrackmynight.com>`,
     to,
     subject,
     text
