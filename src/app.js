@@ -11,6 +11,7 @@ app.use(
 );
 
 const allowedOrigins = [
+  "http://localhost:5173",
   "https://soundtrackmynight.com",   // React (CRA)
   "https://m-music-lory.vercel.app" // Production frontend
 ];
