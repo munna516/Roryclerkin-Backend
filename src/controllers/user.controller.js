@@ -36,3 +36,55 @@ export const loginUser = async (req, res) => {
         return errorResponse(res, status, error.message);
     }
 }
+
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return errorResponse(res, 400, "Email is required");
+        }
+        const result = await userService.forgotPassword(email);
+        if (result.success) {
+            return successResponse(res, 200, result.message, result);
+        }
+        return errorResponse(res, 400, result.message);
+    } catch (error) {
+        const status = error.status || 500;
+        return errorResponse(res, status, error.message);
+    }
+}
+
+export const verifyOTP = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        if (!email || !otp) {
+            return errorResponse(res, 400, "Email and OTP are required");
+        }
+
+        const result = await userService.verifyOTP(email, otp);
+        if (result.success) {
+            return successResponse(res, 200, result.message, result);
+        }
+        return errorResponse(res, 400, result.message);
+    } catch (error) {
+        const status = error.status || 500;
+        return errorResponse(res, status, error.message);
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+        if (!email || !newPassword) {
+            return errorResponse(res, 400, "Email and password are required");
+        }
+        const result = await userService.resetPassword(email, newPassword);
+        if (result.success) {
+            return successResponse(res, 200, result.message, result);
+        }
+        return errorResponse(res, 400, result.message);
+    } catch (error) {
+        const status = error.status || 500;
+        return errorResponse(res, status, error.message);
+    }
+}

@@ -58,12 +58,22 @@ export const QuizService = {
             await quiz.save();
 
             const playlistLink = `${constants.FRONTEND_URL}/playlist/${quiz._id}`;
-            
+
             await sendEmail(
                 email,
-                "Your Personalized Playlist is Ready!",
-                `Click the link to view your playlist: ${playlistLink}`
+                "Your Soundtrack My Night Playlist Is Ready 🎶",
+                `Hi there,
+              
+              Your personalised Soundtrack My Night playlist is ready 🎶
+              
+              We've created this soundtrack based on the vibe you chose — the energy, mood, and moments you want your night to be remembered for.
+              
+              👇 *Click below to hear your playlist:*
+              ${playlistLink}
+              
+            `
             );
+
 
             return {
                 success: true,
