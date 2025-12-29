@@ -5,6 +5,11 @@ import paymentRoutes from "./routes/payment.routes.js";
 
 const app = express();
 
+app.use(
+  "/api/v1/stripe/payment",
+  paymentRoutes
+);
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
@@ -34,22 +39,23 @@ app.use(
   })
 );
 
-
-app.use(
-  "/api/v1/stripe/payment",
-  paymentRoutes
-);
-
+/* ================================
+   BODY PARSERS (AFTER WEBHOOK)
+   ================================ */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
+/* ================================
+   API ROUTES
+   ================================ */
 app.use("/api/v1", routes);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to the Rory Backend" });
 });
-
+/* ================================
+   HEALTH CHECK (OPTIONAL)
+   ================================ */
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "OK" });
 });
