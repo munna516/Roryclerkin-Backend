@@ -17,6 +17,6 @@ export const sendEmail = async (to, subject, text) => {
     from: `"Soundtrack My Night" <info@soundtrackmynight.com>`,
     to,
     subject,
-    text
+    html: text
   });
 };

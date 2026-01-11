@@ -59,20 +59,68 @@ export const QuizService = {
 
             const playlistLink = `${constants.FRONTEND_URL}/playlist/${quiz._id}`;
 
+            // await sendEmail(
+            //     email,
+            //     "Your Soundtrack My Night Playlist Is Ready 🎶",
+            //     `Hi there,
+
+            //   Your personalised Soundtrack My Night playlist is ready 🎶
+
+            //   We've created this soundtrack based on the vibe you chose — the energy, mood, and moments you want your night to be remembered for.
+
+            //   👇 *Click below to hear your playlist:*
+            //   ${playlistLink}
+
+            // `
+            // );
+
             await sendEmail(
                 email,
-                "Your Soundtrack My Night Playlist Is Ready 🎶",
-                `Hi there,
+                "🎧 Your Free Soundtrack My Night Playlist Is Ready",
+                `
+                <div style="font-family: Arial, sans-serif; max-width:600px; margin:auto; color:#111;">
               
-              Your personalised Soundtrack My Night playlist is ready 🎶
+                  <h2>🎧 Here is your free <strong>Soundtrack My Night</strong> Spotify playlist</h2>
               
-              We've created this soundtrack based on the vibe you chose — the energy, mood, and moments you want your night to be remembered for.
+                  <p>
+                    This playlist is a preview of your chosen vibe — giving you a taste of how your night could sound.
+                  </p>
               
-              👇 *Click below to hear your playlist:*
-              ${playlistLink}
+                  <p style="margin:20px 0;">
+                    👉 <a href="${playlistLink}" 
+                       style="background:#16a34a; color:#ffffff; padding:12px 20px; text-decoration:none; border-radius:8px; font-weight:600;">
+                      Listen to your playlist
+                    </a>
+                  </p>
               
-            `
+                  <hr style="margin:30px 0;"/>
+              
+                  <h3>Secure your extended playlist — built for a full dancefloor</h3>
+              
+                  <p>
+                    Upgrade to the <strong>3-hour, 50-track Premium Playlist (€9)</strong>, designed to keep the energy high
+                    all night and easy to share with your partner, band, or DJ.
+                  </p>
+              
+                  <p>🎁 <strong>Free bonus:</strong><br/>
+                    Our <strong>Ultimate Guide to Wedding Entertainment in Ireland (PDF)</strong>
+                  </p>
+              
+                  <p>
+                    <strong>Soundtrack My Night</strong><br/>
+                    <em>Powered by DJ & SAX®</em>
+                  </p>
+              
+                  <p style="font-size:14px; color:#444;">
+                    👉 Ireland's multi award-winning wedding entertainment team<br/>
+                    ⭐ 5.0 ★ Google Rating<br/>
+                    🌐 soundtrackmynight.com | djandsax.ie
+                  </p>
+              
+                </div>
+                `
             );
+
 
 
             return {

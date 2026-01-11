@@ -88,7 +88,49 @@ export const userService = {
         user.isOTPVerified = false;
         await user.save();
 
-        await sendEmail(email, "Password Reset OTP", `Your password reset OTP is ${otp}. This OTP will expire in 10 minutes.`);
+        await sendEmail(
+            email,
+            "🔐 Password Reset OTP",
+            `
+            <div style="font-family:Arial, sans-serif; max-width:500px; margin:auto; padding:20px; color:#111;">
+              
+              <h2 style="text-align:center;">Password Reset Request</h2>
+          
+              <p>Hello,</p>
+          
+              <p>
+                We received a request to reset your password.  
+                Please use the OTP below to continue.
+              </p>
+          
+              <div style="text-align:center; margin:30px 0;">
+                <span style="
+                  font-size:28px;
+                  letter-spacing:6px;
+                  font-weight:bold;
+                  background:#f3f4f6;
+                  padding:12px 24px;
+                  border-radius:8px;
+                  display:inline-block;
+                ">
+                  ${otp}
+                </span>
+              </div>
+          
+              <p>
+                This OTP will expire in <strong>10 minutes</strong>.  
+                If you did not request this, you can safely ignore this email.
+              </p>
+          
+              <hr style="margin:30px 0;" />
+          
+              <p style="font-size:13px; color:#555;">
+                Soundtrack My Night Security Team
+              </p>
+          
+            </div>
+            `
+        );
 
         return { success: true, message: "Password reset email sent successfully", status: 200 };
     },
